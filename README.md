@@ -1,5 +1,6 @@
-﻿# cancelclick300.js
-移动设备消除click事件的300ms延迟
+﻿# noclickdelay.js
+取消移动设备上click事件的300毫秒延迟
+Cancel the click event on a mobile device 300 milliseconds latency
 
 之前在项目中使用过 fastclick.js 来解决click事件的300ms延迟问题，但是遇到label标签和表单元素时出现了bug，同时 fastclick.js 无法兼容某些插件，导致点击后插件不能正常呼出。
 
