@@ -1,28 +1,31 @@
 /**
- * @brief noclickdelay v1.4 取消移动设备上click事件的300毫秒延迟
- * @author 白俊杰 2015/3/12
+ * @brief noclickdelay v1.5 取消移动设备上click事件的300毫秒延迟
+ * @author 白俊杰 625603381@qq.com 2015/3/27
  */
 (function() {
 
-var isMobile = !!navigator.userAgent.match(/mobile/i);
-var isWinPhone = !!navigator.userAgent.match(/Windows Phone/i);
-var isApple = !!navigator.userAgent.match(/(iPad|iPod|iPhone)/i) && !isWinPhone;
-var isAndroid = !!navigator.userAgent.match(/android/i) && !isWinPhone;
-var supportPointer = !!window.navigator.pointerEnabled || !!window.navigator.msPointerEnabled;
+var isMobile = !!navigator.userAgent.match(/mobile/i),
+	isWinPhone = !!navigator.userAgent.match(/Windows Phone/i),
+	isApple = !!navigator.userAgent.match(/(iPad|iPod|iPhone)/i) && !isWinPhone,
+	isAndroid = !!navigator.userAgent.match(/android/i) && !isWinPhone,
+	supportPointer = !!window.navigator.pointerEnabled || !!window.navigator.msPointerEnabled;
 
 if (supportPointer) { // 支持pointer的设备可用样式来取消click事件的300毫秒延迟
 	document.body.style.msTouchAction = "none";
 	document.body.style.touchAction = "none";
 } else if (isMobile) {
-	var touchX, touchY;
-	var labelControl = null; // label绑定元素
-	var focusElement = null; // 当前焦点元素
-	var cancelClick; // 是否取消点击行为
+	var touchX, touchY,
+		labelControl = null, // label绑定元素
+		focusElement = null, // 当前焦点元素
+		trackingClickStart,
+		timeout = 700;
+		cancelClick; // 是否取消点击行为
 
 	document.addEventListener("touchstart", function(e) {
 		var touch = e.changedTouches[0];
 		touchX = touch.clientX;
 		touchY = touch.clientY;
+		trackingClickStart = e.timeStamp;
 		cancelClick = false;
 	}, false);
 
@@ -36,6 +39,10 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 	}, false);
 
 	document.addEventListener("touchend", function(e) {
+		if (e.timeStamp - trackingClickStart > timeout) {
+			cancelClick = true;
+		}
+
 		if (cancelClick) {
 			cancelClick = false;
 			return;
