@@ -1,5 +1,5 @@
 /**
- * @brief noclickdelay v1.5 取消移动设备上click事件的300毫秒延迟
+ * @brief noclickdelay v1.6 取消移动设备上click事件的300毫秒延迟
  * @author 白俊杰 625603381@qq.com 2015/3/27
  * https://github.com/baijunjie/noclickdelay.js
  */
@@ -77,10 +77,14 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 			}
 		}
 
-		var evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, true);
-		evt.forwardedTouchEvent = true;
-		e.target.dispatchEvent(evt);
+		if (!isDisabled(e.target) || !isCheckbox(e.target)) {
+			// 如果该元素不是禁用状态，或者是禁用状态，但不是checkbox或者radio，才派发点击事件
+			// 因为禁用状态下的checkbox和radio会被这里派发的单击事件激活
+			var evt = document.createEvent("MouseEvents");
+			evt.initMouseEvent("click", true, true);
+			evt.forwardedTouchEvent = true;
+			e.target.dispatchEvent(evt);
+		}
 
 		if (isApple) { // IOS设备消除touchend后300ms触发的click事件
 			// 如果不是可用文本域才阻止浏览器的默认行为
@@ -141,6 +145,19 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 					case 'tel':
 					case 'email':
 					case 'url':
+						return true;
+				}
+				return false;
+			default:
+				return false;
+		}
+	}
+	function isCheckbox(target) {
+		switch (target.tagName) {
+			case 'INPUT':
+				switch (target.type) {
+					case 'checkbox':
+					case 'radio':
 						return true;
 				}
 				return false;
