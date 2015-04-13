@@ -19,7 +19,7 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 		labelControl = null, // label绑定元素
 		focusElement = null, // 当前焦点元素
 		trackingClickStart,
-		timeout = 700;
+		timeout = 700,
 		cancelClick; // 是否取消点击行为
 
 	document.addEventListener("touchstart", function(e) {
