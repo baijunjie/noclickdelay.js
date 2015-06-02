@@ -1,5 +1,5 @@
 /**
- * @brief noclickdelay v1.6 取消移动设备上click事件的300毫秒延迟
+ * @brief noclickdelay v1.7 取消移动设备上click事件的300毫秒延迟
  * @author 白俊杰 625603381@qq.com 2015/3/27
  * https://github.com/baijunjie/noclickdelay.js
  */
@@ -33,13 +33,15 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 	document.addEventListener("touchmove", function(e) {
 		var touch = e.changedTouches[0];
 		// 水平或垂直方向移动超过15px测判定为取消（根据chrome浏览器默认的判断取消点击的移动量）
-		if (Math.abs(touch.clientX-touchX)>15
-		|| Math.abs(touch.clientY-touchY)>15) {
+		if (Math.abs(touch.clientX - touchX) > 15
+		|| Math.abs(touch.clientY - touchY) > 15) {
 			cancelClick = true;
 		}
 	}, false);
 
 	document.addEventListener("touchend", function(e) {
+		var touch = e.changedTouches[0];
+
 		if (e.timeStamp - trackingClickStart > timeout) {
 			cancelClick = true;
 		}
@@ -81,7 +83,7 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 			// 如果该元素不是禁用状态，或者是禁用状态，但不是checkbox或者radio，才派发点击事件
 			// 因为禁用状态下的checkbox和radio会被这里派发的单击事件激活
 			var evt = document.createEvent("MouseEvents");
-			evt.initMouseEvent("click", true, true);
+			evt.initMouseEvent("click", true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
 			evt.forwardedTouchEvent = true;
 			e.target.dispatchEvent(evt);
 		}
