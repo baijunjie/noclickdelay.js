@@ -1,5 +1,5 @@
 /**
- * @brief noclickdelay v1.7 取消移动设备上click事件的300毫秒延迟
+ * @brief noclickdelay v1.8 取消移动设备上click事件的300毫秒延迟
  * @author 白俊杰 625603381@qq.com 2015/3/27
  * https://github.com/baijunjie/noclickdelay.js
  */
@@ -51,10 +51,17 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 			return;
 		}
 
-		if (isForm(e.target)) { // 如果是表单元素，则让其获取焦点
+		var is_form = isForm(e.target),
+			is_text = isText(e.target),
+			is_select = isSelect(e.target),
+			is_checkbox = isCheckbox(e.target),
+			is_disabled = isDisabled(e.target);
+
+
+		if (is_form) { // 如果是表单元素，则让其获取焦点
 			focusElement = e.target;
 			focusElement.focus();
-			if (isAndroid && isSelect(e.target)) { // 在Android设备上，如果是select，则单独转发一个mousedown事件，用于激活选择列表
+			if (isAndroid && is_select) { // 在Android设备上，如果是select，则单独转发一个mousedown事件，用于激活选择列表
 				var evt = document.createEvent("MouseEvents");
 				evt.initMouseEvent("mousedown", true, true);
 				evt.forwardedTouchEvent = true;
@@ -79,9 +86,13 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 			}
 		}
 
-		if (!isDisabled(e.target) || !isCheckbox(e.target)) {
-			// 如果该元素不是禁用状态，或者是禁用状态，但不是checkbox或者radio，才派发点击事件
-			// 因为禁用状态下的checkbox和radio会被这里派发的单击事件激活
+		if ((!is_disabled && !is_text)
+		// 如果该元素不是禁用状态，且不是文本输入框，才派发click事件
+		// 因为不是禁用状态的文本输入框再之前已经被设置为焦点，同时激活了键盘，使文本框自身产生了位移
+		// 此时再派发click事件将会使文本输入框失去焦点
+		|| (is_disabled && !is_checkbox)) {
+		// 或者如果是禁用状态，但不是checkbox或者radio，才派发click事件
+		// 因为禁用状态下的checkbox和radio会被这里派发的click事件激活
 			var evt = document.createEvent("MouseEvents");
 			evt.initMouseEvent("click", true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
 			evt.forwardedTouchEvent = true;
@@ -91,11 +102,11 @@ if (supportPointer) { // 支持pointer的设备可用样式来取消click事件�
 		if (isApple) { // IOS设备消除touchend后300ms触发的click事件
 			// 如果不是可用文本域才阻止浏览器的默认行为
 			// 因为文本弹出编辑菜单和指定光标到某一文本段落的动作需要浏览器默认行为的支持
-			if (isDisabled(e.target) || !isText(e.target)) e.preventDefault();
+			if (is_disabled || !is_text) e.preventDefault();
 		} else if (isAndroid) { // Android设备消除touchend后150ms触发的mousedown事件
 			// 如果不是文本域才阻止浏览器的默认行为
 			// 即使文本域不可用，也不可以阻止浏览器的默认行为，因为这样会使不可用的文本域呼出虚拟键盘
-			if (!isText(e.target)) e.preventDefault();
+			if (!is_text) e.preventDefault();
 		}
 	}, false);
 
