@@ -1,6 +1,8 @@
 /**
- * @brief noclickdelay v1.8 取消移动设备上click事件的300毫秒延迟
- * @author 白俊杰 625603381@qq.com 2015/3/27
+ * noclickdelay v1.8 取消移动设备上click事件的300毫秒延迟
+ * (c) 2014-2016 BaiJunjie
+ * MIT Licensed.
+ *
  * https://github.com/baijunjie/noclickdelay.js
  */
 (function() {
